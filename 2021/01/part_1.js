@@ -9,5 +9,5 @@ fs.readFile('input.txt', 'utf8' , (_, data) => {
       }
       prev_depth = depth;
   });
-  console.log(total);   // 1681
+  console.log(`Total: ${total}`);
 });
