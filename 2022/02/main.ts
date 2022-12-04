@@ -1,6 +1,6 @@
 import * as fs from "fs";
 
-/* RPS - listing
+/* RPS - calculation
  *
  * A/X => Rock (1pts)
  * B/Y => Paper (2pts)
@@ -20,25 +20,83 @@ const checkOutcome = (opponent: string, player: string): number => {
   let win = false;
   let draw = false;
   if (opponent === "A") {
-    if (player === "X") draw = true;
-    else if (player === "Y") win = true;
+    if (player === "X") {
+      draw = true;
+    } else if (player === "Y") {
+      win = true;
+    }
   } else if (opponent === "B") {
-    if (player === "Y") draw = true;
-    else if (player === "Z") win = true;
+    if (player === "Y") {
+      draw = true;
+    } else if (player === "Z") {
+      win = true;
+    }
   } else {
-    if (player === "Z") draw = true;
-    else if (player === "X") win = true;
+    if (player === "Z") {
+      draw = true;
+    } else if (player === "X") {
+      win = true;
+    }
   }
 
   return win ? pts + 6 : draw ? pts + 3 : pts;
 };
 
-(async () => {
+const getDesiredOutcome = (opponent: string, outcome: string): string => {
+  let player: string;
+  if (outcome === "X") {
+    // loose
+    if (opponent === "A") {
+      player = "Z";
+    } else if (opponent === "B") {
+      player = "X";
+    } else {
+      player = "Y";
+    }
+  } else if (outcome === "Y") {
+    // draw
+    if (opponent === "A") {
+      player = "X";
+    } else if (opponent === "B") {
+      player = "Y";
+    } else {
+      player = "Z";
+    }
+  } else {
+    // win
+    if (opponent === "A") {
+      player = "Y";
+    } else if (opponent === "B") {
+      player = "Z";
+    } else {
+      player = "X";
+    }
+  }
+  return player;
+};
+
+const part1 = async (data: string[]): Promise<number> => {
   let points = 0;
-  const data = fs.readFileSync("input.txt", "utf8").split(/\r?\n/);
   data.forEach((data) => {
     const [opponent, player] = data.split(" ");
     points += checkOutcome(opponent, player);
   });
-  console.log(`Total: ${points}`);
+  return points;
+};
+
+const part2 = async (data: string[]): Promise<number> => {
+  let points = 0;
+  data.forEach((data) => {
+    const [opponent, outcome] = data.split(" ");
+    const player = getDesiredOutcome(opponent, outcome);
+    points += checkOutcome(opponent, player);
+  });
+  return points;
+};
+
+(async () => {
+  const data = fs.readFileSync("input.txt", "utf8").split(/\r?\n/);
+  const [p1, p2] = await Promise.all([part1(data), part2(data)]);
+  console.log(`[1] Total points: ${p1}`);
+  console.log(`[2] Total points: ${p2}`);
 })();
